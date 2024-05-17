@@ -241,13 +241,13 @@ def timeout(duration=60):
 
 @retry_on_failure(max_tries=10)
 def get_instance_identity_document():
-    resp = requests.get('http://169.254.169.254/latest/dynamic/instance-identity/document', proxies = {'no_proxy' : '169.254.169.254/32'})
+    resp = requests.get('http://169.254.169.254/latest/dynamic/instance-identity/document', proxies = proxies={'http': f"http://169.254.170.2{os.environ['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI']}", 'https': f"http://169.254.170.2{os.environ['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI']}"})
     resp.raise_for_status()
     return resp.text.rstrip()
 
 @retry_on_failure(max_tries=10)
 def get_instance_identity_signature():
-    resp = requests.get('http://169.254.169.254/latest/dynamic/instance-identity/signature', proxies = {'no_proxy' : '169.254.169.254/32'})
+    resp = requests.get('http://169.254.169.254/latest/dynamic/instance-identity/signature', proxies = proxies={'http': f"http://169.254.170.2{os.environ['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI']}", 'https': f"http://169.254.170.2{os.environ['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI']}"})
     resp.raise_for_status()
     return resp.text.rstrip()
 
@@ -255,7 +255,7 @@ _instance_id = '__unset'
 
 @retry_on_failure(max_tries=10)
 def _fetch_instance_id():
-    resp = requests.get('http://169.254.169.254/latest/meta-data/instance-id', timeout=2, proxies = {'no_proxy' : '169.254.169.254/32'})
+    resp = requests.get('http://169.254.169.254/latest/meta-data/instance-id', timeout=2, proxies = proxies={'http': f"http://169.254.170.2{os.environ['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI']}", 'https': f"http://169.254.170.2{os.environ['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI']}"})
     resp.raise_for_status()
     return resp.text.strip()
 
@@ -278,7 +278,7 @@ def is_ec2():
 
 @retry_on_failure(max_tries=10)
 def get_role_creds(name):
-    resp = requests.get('http://169.254.169.254/latest/meta-data/iam/security-credentials/%s' % name, proxies = {'no_proxy' : '169.254.169.254/32'})
+    resp = requests.get('http://169.254.169.254/latest/meta-data/iam/security-credentials/%s' % name, proxies = proxies={'http': f"http://169.254.170.2{os.environ['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI']}", 'https': f"http://169.254.170.2{os.environ['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI']}"})
     resp.raise_for_status()
     role = resp.json()
     return Credentials(role['AccessKeyId'], role['SecretAccessKey'], role['Token'], datetime.datetime.strptime(role['Expiration'], '%Y-%m-%dT%H:%M:%SZ'))
